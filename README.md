@@ -6,8 +6,7 @@ Python script, which checks domains listed in file, to be responsive for HTTP(S)
 
 Options:
 *  --domains PATH  Domains to be checked for responsiveness
-*  --proxy TEXT    Proxy to be used in format
-*                  http|https|socks5://proxy_IP:proxy_port
+*  --proxy TEXT    Proxy to be used in format http|https|socks5://proxy_IP:proxy_port
 *  --help          Show this message and exit.
 
 Commands:
