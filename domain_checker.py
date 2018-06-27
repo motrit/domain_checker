@@ -3,7 +3,6 @@
 
 import click
 import requests
-import progressbar
 
 @click.group()
 @click.pass_context
@@ -23,35 +22,27 @@ def check(ctx) :
     proxy = ctx.obj['proxy']
     domain_list = ctx.obj['domains']
     live_domain_list = []
+    counter = 0
     protocols = ['http://', 'https://']
-    progress_iter = 0
-    bar = progressbar.ProgressBar(
-            widgets=[   'Processing...', 
-                        progressbar.Bar(), 
-                        progressbar.Percentage(),
-                        progressbar.ETA()
-                    ], 
-            max_value = len(domain_list) * len(protocols),
-            redirect_stdout = True)
-    bar.start()
 
-    for prefix in protocols :
-        for domain in domain_list :
+    for domain in domain_list :
+        counter += 1
+        for prefix in protocols :
             try :
                 if prefix+domain not in live_domain_list :
                     r = requests.get(prefix + domain, proxies=proxy, timeout=3)
+                    print (counter,'/',len(domain_list), ' : ', prefix+domain, 'exists!')
+                    if (('http://' + domain) in live_domain_list) or (('https://' + domain) in live_domain_list):
+                        prefix = 'http(s)://'
                     live_domain_list.append(prefix+domain)
-                    print (prefix+domain, 'exists!')
             except (requests.exceptions.Timeout, requests.exceptions.ReadTimeout) :
 #                print (prefix+domain, 'doesn\'t respond')
                 pass
             except requests.exceptions.ConnectionError :
 #                print (prefix+domain, 'doesn\'t exist')
                 pass
-            progress_iter += 1
-            bar.update(progress_iter)
-    bar.finish()
-    print(live_domain_list)
+    print ('Scanning finished! Printing results...')
+    print (live_domain_list)
 
 
 if __name__ == '__main__' :
